@@ -10,9 +10,9 @@ import java.time.LocalDateTime;
 @NoArgsConstructor // a null base constructor can fill data in
 @AllArgsConstructor // faster to add new object within all data without using lots of setter
 public class Task {
-    private String id;
+    private Long id;
     private String title;
     private String description;
-    private boolean completed;
+    private Boolean completed;
     private LocalDateTime createdAt;
 }
