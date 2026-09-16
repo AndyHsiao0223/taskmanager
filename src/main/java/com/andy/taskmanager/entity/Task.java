@@ -1,18 +1,38 @@
 package com.andy.taskmanager.entity;
 
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
+@Entity
+@Table(name = "tasks")
 @Data // getter, setter, @Override toString(), @Override hashCode(), @Override equals()
 @NoArgsConstructor // a null base constructor can fill data in
 @AllArgsConstructor // faster to add new object within all data without using lots of setter
 public class Task {
-    private Long id;
-    private String title;
-    private String description;
-    private Boolean completed;
-    private LocalDateTime createdAt;
+
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  private Long id;
+
+  @Column(nullable = false)
+  private String title;
+
+  @Column(length = 500)
+  private String description;
+
+  @Column(nullable = false)
+  private Boolean completed = false;
+
+  @Column(name = "created_at", nullable = false, updatable = false)
+  private LocalDateTime createdAt;
+
+  @PrePersist
+  protected void onCreate() {
+    this.completed = false;
+    this.createdAt = LocalDateTime.now();
+  }
 }
