@@ -9,6 +9,7 @@ import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "tasks")
+// @SoftDelete (after remove lombok can use)
 @Data // getter, setter, @Override toString(), @Override hashCode(), @Override equals()
 @NoArgsConstructor // a null base constructor can fill data in
 @AllArgsConstructor // faster to add new object within all data without using lots of setter
