@@ -69,4 +69,16 @@ public class TaskController {
     // 204 No Content
     return ResponseEntity.noContent().build();
   }
+
+  @GetMapping("/completed/{status}")
+  public ResponseEntity<List<Task>> getTasksByCompletion(@PathVariable boolean status) {
+    List<Task> tasks = taskRepository.findByCompleted(status);
+    return ResponseEntity.ok(tasks);
+  }
+
+  @GetMapping("/search")
+  public ResponseEntity<List<Task>> searchTasksByTitle(@RequestParam String title) {
+    List<Task> tasks = taskRepository.findByTitleContainingIgnoreCase(title);
+    return ResponseEntity.ok(tasks);
+  }
 }
