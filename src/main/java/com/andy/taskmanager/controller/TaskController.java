@@ -1,7 +1,7 @@
 package com.andy.taskmanager.controller;
 
 import com.andy.taskmanager.entity.Task;
-import com.andy.taskmanager.repository.TaskRepository;
+import com.andy.taskmanager.service.TaskService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -14,71 +14,52 @@ import java.util.List;
 // "/v1": Provide us a safe way to upgrade without breaking existing users (v1, v2 can run at the same time)
 public class TaskController {
 
-  private final TaskRepository taskRepository;
+  private final TaskService taskService;
 
-  //  Constructor Injection from Repository
-  public TaskController(TaskRepository taskRepository) {
-    this.taskRepository = taskRepository;
+  //  Constructor Injection from Service
+  public TaskController(TaskService taskService) {
+    this.taskService = taskService;
   }
 
   @GetMapping
   public List<Task> getAllTasks() {
-    return taskRepository.findAll();
+    return taskService.getAllTasks();
   }
 
   @GetMapping("/{id}")
   public ResponseEntity<Task> getTaskById(@PathVariable Long id) {
-    return taskRepository.findById(id)
+    return taskService.getTaskById(id)
         .map(ResponseEntity::ok)
         .orElse(ResponseEntity.notFound().build());
   }
 
   @PostMapping
   public ResponseEntity<Task> createTask(@RequestBody Task task) {
-    Task savedTask = taskRepository.save(task);
+    Task savedTask = taskService.createTask(task);
     return ResponseEntity.status(HttpStatus.CREATED).body(savedTask);
   }
 
   @PutMapping("/{id}")
   public ResponseEntity<Task> updateTask(@PathVariable Long id, @RequestBody Task updatedTask) {
-    // Find
-    Task existingTask = taskRepository.findById(id).orElse(null);
-
-    // Judge
-    if (existingTask == null) {
-      return ResponseEntity.notFound().build();
-    }
-
-    // Update
-    existingTask.setTitle(updatedTask.getTitle());
-    existingTask.setDescription(updatedTask.getDescription());
-    existingTask.setCompleted(updatedTask.getCompleted());
-
-    // Save, Return
-    Task savedTask = taskRepository.save(existingTask);
-    return ResponseEntity.ok(savedTask);
+    return taskService.updateTask(id, updatedTask)
+        .map(ResponseEntity::ok)
+        .orElse(ResponseEntity.notFound().build());
   }
 
   @DeleteMapping("/{id}")
   public ResponseEntity<Void> deleteTask(@PathVariable Long id) {
-    if (!taskRepository.existsById(id)) {
-      return ResponseEntity.notFound().build();
-    }
-
-    taskRepository.deleteById(id);
-    // 204 No Content
-    return ResponseEntity.noContent().build();
+    return taskService.deleteTask(id) ? ResponseEntity.noContent().build() : ResponseEntity.notFound().build();
   }
 
   @GetMapping("/completed/{status}")
-  public ResponseEntity<List<Task>> getTasksByCompletion(@PathVariable boolean status) {
-    List<Task> tasks = taskRepository.findByCompleted(status);
+  public ResponseEntity<List<Task>> getTasksByCompletionStatus(@PathVariable boolean status) {
+    List<Task> tasks = taskService.getTasksByCompletionStatus(status);
     return ResponseEntity.ok(tasks);
   }
 
   @GetMapping("/search")
   public ResponseEntity<List<Task>> searchTasksByTitle(@RequestParam String title) {
-    List<Task> tasks = taskRepository.findByTitleContainingIgnoreCase(title);
+    List<Task> tasks = taskService.searchTasksByTitle(title);
     return ResponseEntity.ok(tasks);
   }
 }
