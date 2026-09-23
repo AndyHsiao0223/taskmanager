@@ -1,13 +1,12 @@
 package com.andy.taskmanager.service;
 
 import com.andy.taskmanager.entity.Task;
+import com.andy.taskmanager.exception.TaskNotFoundException;
 import com.andy.taskmanager.repository.TaskRepository;
-
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @Transactional(readOnly = true)
@@ -23,8 +22,9 @@ public class TaskService {
     return taskRepository.findAll();
   }
 
-  public Optional<Task> getTaskById(Long id) {
-    return taskRepository.findById(id);
+  public Task getTaskById(Long id) {
+    return taskRepository.findById(id)
+        .orElseThrow(() -> new TaskNotFoundException(id));
   }
 
   @Transactional
@@ -33,14 +33,10 @@ public class TaskService {
   }
 
   @Transactional
-  public Optional<Task> updateTask(Long id, Task updatedTask) {
-    // Find
-    Task existingTask = taskRepository.findById(id).orElse(null);
-
-    // Judge
-    if (existingTask == null) {
-      return Optional.empty();
-    }
+  public Task updateTask(Long id, Task updatedTask) {
+    // Find, Judge
+    Task existingTask = taskRepository.findById(id)
+        .orElseThrow(() -> new TaskNotFoundException(id));
 
     // Update
     existingTask.setTitle(updatedTask.getTitle());
@@ -48,19 +44,15 @@ public class TaskService {
     existingTask.setCompleted(updatedTask.getCompleted());
 
     // Save, Return
-    Task savedTask = taskRepository.save(existingTask);
-    return Optional.of(savedTask);
+    return taskRepository.save(existingTask);
   }
 
   @Transactional
-  public boolean deleteTask(Long id) {
-    if (!taskRepository.existsById(id)) {
-      return false;
-    }
-
-    taskRepository.deleteById(id);
-    // 204 No Content
-    return true;
+  public void deleteTask(Long id) {
+    Task task = taskRepository.findById(id)
+        .orElseThrow(() -> new TaskNotFoundException(id));
+    
+    taskRepository.delete(task);
   }
 
   public List<Task> getTasksByCompletionStatus(boolean status) {
