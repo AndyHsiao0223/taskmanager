@@ -2,17 +2,22 @@ package com.andy.taskmanager.exception;
 
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ProblemDetail;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
 import java.time.LocalDateTime;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 @ControllerAdvice
 public class GlobalExceptionHandler {
 
+  // TODO: Refactor to RFC 9457 (ProblemDetail)
   @ExceptionHandler(TaskNotFoundException.class)
   public ResponseEntity<Map<String, Object>> handleTaskNotFoundException(TaskNotFoundException exception, HttpServletRequest request) {
     Map<String, Object> body = new HashMap<>();
@@ -24,6 +29,27 @@ public class GlobalExceptionHandler {
     return new ResponseEntity<>(body, HttpStatus.NOT_FOUND);
   }
 
+  @ExceptionHandler(MethodArgumentNotValidException.class)
+  public ProblemDetail handleValidationException(MethodArgumentNotValidException exception) {
+    ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, "Validation Failed");
+
+    problemDetail.setTitle("Bad Request");
+    problemDetail.setProperty("timestamp", LocalDateTime.now());
+
+    List<Map<String, String>> errors = exception.getBindingResult()
+        .getFieldErrors()
+        .stream()
+        .map(error -> Map.of(
+            "field", error.getField(),
+            "message", Objects.requireNonNullElse(error.getDefaultMessage(), "Validation error")
+        ))
+        .toList();
+    problemDetail.setProperty("errors", errors);
+
+    return problemDetail;
+  }
+
+  // TODO: Refactor to RFC 9457 (ProblemDetail)
   @ExceptionHandler(Exception.class)
   public ResponseEntity<Map<String, Object>> handleGlobalException(HttpServletRequest request) {
     Map<String, Object> body = new HashMap<>();
