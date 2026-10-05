@@ -1,6 +1,7 @@
 package com.andy.taskmanager.controller;
 
-import com.andy.taskmanager.entity.Task;
+import com.andy.taskmanager.dto.TaskRequest;
+import com.andy.taskmanager.dto.TaskResponse;
 import com.andy.taskmanager.service.TaskService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -23,23 +24,23 @@ public class TaskController {
   }
 
   @GetMapping
-  public List<Task> getAllTasks() {
+  public List<TaskResponse> getAllTasks() {
     return taskService.getAllTasks();
   }
 
   @GetMapping("/{id}")
-  public Task getTaskById(@PathVariable Long id) {
+  public TaskResponse getTaskById(@PathVariable Long id) {
     return taskService.getTaskById(id);
   }
 
   @PostMapping
-  public ResponseEntity<Task> createTask(@Valid @RequestBody Task task) {
-    Task savedTask = taskService.createTask(task);
+  public ResponseEntity<TaskResponse> createTask(@Valid @RequestBody TaskRequest task) {
+    TaskResponse savedTask = taskService.createTask(task);
     return ResponseEntity.status(HttpStatus.CREATED).body(savedTask);
   }
 
   @PutMapping("/{id}")
-  public Task updateTask(@PathVariable Long id, @Valid @RequestBody Task updatedTask) {
+  public TaskResponse updateTask(@PathVariable Long id, @Valid @RequestBody TaskRequest updatedTask) {
     return taskService.updateTask(id, updatedTask);
   }
 
@@ -50,14 +51,14 @@ public class TaskController {
   }
 
   @GetMapping("/completed/{status}")
-  public ResponseEntity<List<Task>> getTasksByCompletionStatus(@PathVariable boolean status) {
-    List<Task> tasks = taskService.getTasksByCompletionStatus(status);
+  public ResponseEntity<List<TaskResponse>> getTasksByCompletionStatus(@PathVariable boolean status) {
+    List<TaskResponse> tasks = taskService.getTasksByCompletionStatus(status);
     return ResponseEntity.ok(tasks);
   }
 
   @GetMapping("/search")
-  public ResponseEntity<List<Task>> searchTasksByTitle(@RequestParam String title) {
-    List<Task> tasks = taskService.searchTasksByTitle(title);
+  public ResponseEntity<List<TaskResponse>> searchTasksByTitle(@RequestParam String title) {
+    List<TaskResponse> tasks = taskService.searchTasksByTitle(title);
     return ResponseEntity.ok(tasks);
   }
 }
