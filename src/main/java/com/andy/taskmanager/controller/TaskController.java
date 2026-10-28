@@ -4,11 +4,13 @@ import com.andy.taskmanager.dto.TaskRequest;
 import com.andy.taskmanager.dto.TaskResponse;
 import com.andy.taskmanager.service.TaskService;
 import jakarta.validation.Valid;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController // @Controller, @ResponseBody
 @RequestMapping("/api/v1/tasks") // the basic path use like this: localhost:8080/api/vi/tasks/search-by?status=OPEN
@@ -24,8 +26,16 @@ public class TaskController {
   }
 
   @GetMapping
-  public List<TaskResponse> getAllTasks() {
-    return taskService.getAllTasks();
+  public ResponseEntity<Page<TaskResponse>> getAllTasks(
+          @PageableDefault(
+                  page = 0,
+                  size = 10,
+                  // frontend query params use: "sort=createdAt,desc"
+                  sort = "createdAt",
+                  direction = Sort.Direction.DESC
+          ) Pageable pageable
+  ) {
+    return ResponseEntity.ok(taskService.getAllTasks(pageable));
   }
 
   @GetMapping("/{id}")
@@ -51,14 +61,30 @@ public class TaskController {
   }
 
   @GetMapping("/completed/{status}")
-  public ResponseEntity<List<TaskResponse>> getTasksByCompletionStatus(@PathVariable boolean status) {
-    List<TaskResponse> tasks = taskService.getTasksByCompletionStatus(status);
+  public ResponseEntity<Page<TaskResponse>> getTasksByCompletionStatus(
+          @PathVariable boolean status,
+          @PageableDefault(
+                  page = 0,
+                  size = 10,
+                  sort = "createdAt",
+                  direction = Sort.Direction.DESC
+          ) Pageable pageable
+  ) {
+    Page<TaskResponse> tasks = taskService.getTasksByCompletionStatus(status, pageable);
     return ResponseEntity.ok(tasks);
   }
 
   @GetMapping("/search")
-  public ResponseEntity<List<TaskResponse>> searchTasksByTitle(@RequestParam String title) {
-    List<TaskResponse> tasks = taskService.searchTasksByTitle(title);
+  public ResponseEntity<Page<TaskResponse>> searchTasksByTitle(
+          @RequestParam String title,
+          @PageableDefault(
+                  page = 0,
+                  size = 10,
+                  sort = "createdAt",
+                  direction = Sort.Direction.DESC
+          ) Pageable pageable
+  ) {
+    Page<TaskResponse> tasks = taskService.searchTasksByTitle(title, pageable);
     return ResponseEntity.ok(tasks);
   }
 }

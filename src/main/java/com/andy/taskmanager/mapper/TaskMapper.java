@@ -5,8 +5,6 @@ import com.andy.taskmanager.dto.TaskResponse;
 import com.andy.taskmanager.entity.Task;
 import org.springframework.stereotype.Component;
 
-import java.util.List;
-
 // TODO: Refactor to MapStruct
 @Component
 public class TaskMapper {
@@ -35,9 +33,11 @@ public class TaskMapper {
     task.setCompleted(request.completed());
   }
 
+/*
   public List<TaskResponse> toResponseList(List<Task> tasks) {
     return tasks.stream()
         .map(this::toResponse)
         .toList();
   }
+*/
 }
