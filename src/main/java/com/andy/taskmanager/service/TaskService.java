@@ -6,10 +6,10 @@ import com.andy.taskmanager.entity.Task;
 import com.andy.taskmanager.exception.TaskNotFoundException;
 import com.andy.taskmanager.mapper.TaskMapper;
 import com.andy.taskmanager.repository.TaskRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
 
 @Service
 @Transactional(readOnly = true)
@@ -23,10 +23,10 @@ public class TaskService {
     this.taskMapper = taskMapper;
   }
 
-  public List<TaskResponse> getAllTasks() {
-    List<Task> retrievedTasks = taskRepository.findAll();
+  public Page<TaskResponse> getAllTasks(Pageable pageable) {
+    Page<Task> retrievedTasks = taskRepository.findAll(pageable);
 
-    return taskMapper.toResponseList(retrievedTasks);
+    return retrievedTasks.map(taskMapper::toResponse);
   }
 
   public TaskResponse getTaskById(Long id) {
@@ -65,15 +65,15 @@ public class TaskService {
     taskRepository.delete(task);
   }
 
-  public List<TaskResponse> getTasksByCompletionStatus(boolean status) {
-    List<Task> retrievedTasks = taskRepository.findByCompleted(status);
+  public Page<TaskResponse> getTasksByCompletionStatus(boolean status, Pageable pageable) {
+    Page<Task> retrievedTasks = taskRepository.findByCompleted(status, pageable);
 
-    return taskMapper.toResponseList(retrievedTasks);
+    return retrievedTasks.map(taskMapper::toResponse);
   }
 
-  public List<TaskResponse> searchTasksByTitle(String title) {
-    List<Task> retrievedTasks = taskRepository.findByTitleContainingIgnoreCase(title);
+  public Page<TaskResponse> searchTasksByTitle(String title, Pageable pageable) {
+    Page<Task> retrievedTasks = taskRepository.findByTitleContainingIgnoreCase(title, pageable);
 
-    return taskMapper.toResponseList(retrievedTasks);
+    return retrievedTasks.map(taskMapper::toResponse);
   }
 }
