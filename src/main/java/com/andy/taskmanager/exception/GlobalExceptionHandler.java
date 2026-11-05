@@ -8,6 +8,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
+import java.net.URI;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
@@ -27,6 +28,17 @@ public class GlobalExceptionHandler {
     body.put("path", request.getRequestURI());
 
     return new ResponseEntity<>(body, HttpStatus.NOT_FOUND);
+  }
+
+  @ExceptionHandler(CategoryNotFoundException.class)
+  public ProblemDetail handleCategoryNotFoundException(CategoryNotFoundException exception, HttpServletRequest request) {
+    ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.NOT_FOUND, exception.getMessage());
+
+    problemDetail.setTitle("Category Not Found");
+    problemDetail.setInstance(URI.create(request.getRequestURI()));
+    problemDetail.setProperty("timestamp", LocalDateTime.now());
+
+    return problemDetail;
   }
 
   @ExceptionHandler(MethodArgumentNotValidException.class)
