@@ -1,5 +1,6 @@
 package com.andy.taskmanager.mapper;
 
+import com.andy.taskmanager.dto.CategoryResponse;
 import com.andy.taskmanager.dto.TaskRequest;
 import com.andy.taskmanager.dto.TaskResponse;
 import com.andy.taskmanager.entity.Task;
@@ -18,12 +19,22 @@ public class TaskMapper {
   }
 
   public TaskResponse toResponse(Task task) {
+    CategoryResponse categoryResponse = null;
+    if (task.getCategory() != null) {
+      categoryResponse = new CategoryResponse(
+          task.getCategory().getId(),
+          task.getCategory().getName(),
+          task.getCategory().getDescription()
+      );
+    }
+
     return TaskResponse.builder()
         .id(task.getId())
         .title(task.getTitle())
         .description(task.getDescription())
         .completed(task.getCompleted())
         .createdAt(task.getCreatedAt())
+        .category(categoryResponse)
         .build();
   }
 
