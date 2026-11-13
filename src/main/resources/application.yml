@@ -1,20 +1,9 @@
 spring:
   application:
     name: taskmanager
+  profiles:
+    active: dev
 
-  # PostgreSQL
-  datasource:
-    url: "${POSTGRES_URL:jdbc:postgresql://localhost:5432/task_manager}"
-    username: ${POSTGRES_USER:admin}
-    password: ${POSTGRES_PASSWORD:passw0rd}
-
-  # JPA / Hibernate
-  jpa:
-    hibernate:
-      ddl-auto: update
-
-# Custom Application Properties
 app:
   name: "Task Manager System"
   version: "0.0.1"
-  max-tasks-per-page: 15

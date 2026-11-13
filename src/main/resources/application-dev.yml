@@ -1,0 +1,12 @@
+spring:
+  datasource:
+    url: "jdbc:postgresql://${POSTGRES_HOST:localhost}:${POSTGRES_PORT:5432}/${POSTGRES_DB:task_manager}"
+    username: "${POSTGRES_USER:admin}"
+    password: "${POSTGRES_PASSWORD:passw0rd}"
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+
+app:
+  max-tasks-per-page: 15
