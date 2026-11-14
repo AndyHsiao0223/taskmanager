@@ -43,12 +43,4 @@ public class TaskMapper {
     task.setDescription(request.description());
     task.setCompleted(request.completed());
   }
-
-/*
-  public List<TaskResponse> toResponseList(List<Task> tasks) {
-    return tasks.stream()
-        .map(this::toResponse)
-        .toList();
-  }
-*/
 }
