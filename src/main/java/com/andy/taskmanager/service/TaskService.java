@@ -31,32 +31,14 @@ public class TaskService {
   }
 
   public Page<TaskResponse> searchTasks(String title, Boolean completed, Pageable pageable) {
+    // 1. Assemble dynamic conditions (null conditions are automatically ignored).
     Specification<Task> spec = Specification.where(TaskSpecification.hasTitle(title))
             .and(TaskSpecification.hasCompleted(completed));
 
+    // 2. Execute query with Specification and Pagination.
     return taskRepository.findAll(spec, pageable)
             .map(taskMapper::toResponse);
   }
-
-/*
-  public Page<TaskResponse> getAllTasks(Pageable pageable) {
-    Page<Task> retrievedTasks = taskRepository.findAll(pageable);
-
-    return retrievedTasks.map(taskMapper::toResponse);
-  }
-
-  public Page<TaskResponse> getTasksByCompletionStatus(boolean status, Pageable pageable) {
-    Page<Task> retrievedTasks = taskRepository.findByCompleted(status, pageable);
-
-    return retrievedTasks.map(taskMapper::toResponse);
-  }
-
-  public Page<TaskResponse> searchTasksByTitle(String title, Pageable pageable) {
-    Page<Task> retrievedTasks = taskRepository.findByTitleContainingIgnoreCase(title, pageable);
-
-    return retrievedTasks.map(taskMapper::toResponse);
-  }
-*/
 
   public TaskResponse getTaskById(Long id) {
     Task retrievedTask = taskRepository.findById(id)

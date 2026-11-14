@@ -4,13 +4,14 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.properties.ConfigurationPropertiesScan;
 
-@SpringBootApplication
-// @SpringBootApplication equal to the three below
+// @SpringBootApplication is equivalent to the three below
 // @Configuration
 // @EnableAutoConfiguration
 // @ComponentScan -- like controller component ex: @RestController
-@ConfigurationPropertiesScan
+@SpringBootApplication
+
 // Auto-scans and registers @ConfigurationProperties classes as beans.
+@ConfigurationPropertiesScan
 public class TaskmanagerApplication {
 
 	public static void main(String[] args) {

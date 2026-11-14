@@ -10,10 +10,13 @@ import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "tasks")
-// @SoftDelete (after remove lombok can use)
-@Data // getter, setter, @Override toString(), @Override hashCode(), @Override equals()
-@NoArgsConstructor // a null base constructor can fill data in
-@AllArgsConstructor // faster to add new object within all data without using lots of setter
+// TODO: @SoftDelete (after remove lombok can use)
+// getter, setter, @Override toString(), @Override hashCode(), @Override equals()
+@Data
+// 给框架用：Hibernate 查库需要先建空壳，再塞数据
+@NoArgsConstructor
+// 给自己用：快速 new 出一个包含所有字段的完整对象
+@AllArgsConstructor
 @Builder
 public class Task {
 

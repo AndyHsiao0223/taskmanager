@@ -12,15 +12,12 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-@RestController // @Controller, @ResponseBody
-@RequestMapping("/api/v1/tasks") // the basic path use like this: localhost:8080/api/vi/tasks/search-by?status=OPEN
-// "/api": Tell our infrastructure "this is backend endpoint, not a webpage"
-// "/v1": Provide us a safe way to upgrade without breaking existing users (v1, v2 can run at the same time)
+@RestController
+@RequestMapping("/api/v1/tasks")
 public class TaskController {
 
   private final TaskService taskService;
 
-  //  Constructor Injection from Service
   public TaskController(TaskService taskService) {
     this.taskService = taskService;
   }
@@ -32,7 +29,7 @@ public class TaskController {
           @PageableDefault(
                   page = 0,
                   size = 10,
-                  // frontend query params use: "sort=createdAt,desc"
+              // e.g. ?sort=createdAt,desc
                   sort = "createdAt",
                   direction = Sort.Direction.DESC
           ) Pageable pageable
@@ -40,49 +37,6 @@ public class TaskController {
     Page<TaskResponse> tasks = taskService.searchTasks(title, completed, pageable);
     return ResponseEntity.ok(tasks);
   }
-
-/*
-  @GetMapping
-  public ResponseEntity<Page<TaskResponse>> getAllTasks(
-          @PageableDefault(
-                  page = 0,
-                  size = 10,
-                  // frontend query params use: "sort=createdAt,desc"
-                  sort = "createdAt",
-                  direction = Sort.Direction.DESC
-          ) Pageable pageable
-  ) {
-    return ResponseEntity.ok(taskService.getAllTasks(pageable));
-  }
-
-  @GetMapping("/completed/{status}")
-  public ResponseEntity<Page<TaskResponse>> getTasksByCompletionStatus(
-          @PathVariable boolean status,
-          @PageableDefault(
-                  page = 0,
-                  size = 10,
-                  sort = "createdAt",
-                  direction = Sort.Direction.DESC
-          ) Pageable pageable
-  ) {
-    Page<TaskResponse> tasks = taskService.getTasksByCompletionStatus(status, pageable);
-    return ResponseEntity.ok(tasks);
-  }
-
-  @GetMapping("/search")
-  public ResponseEntity<Page<TaskResponse>> searchTasksByTitle(
-          @RequestParam String title,
-          @PageableDefault(
-                  page = 0,
-                  size = 10,
-                  sort = "createdAt",
-                  direction = Sort.Direction.DESC
-          ) Pageable pageable
-  ) {
-    Page<TaskResponse> tasks = taskService.searchTasksByTitle(title, pageable);
-    return ResponseEntity.ok(tasks);
-  }
-*/
 
   @GetMapping("/{id}")
   public TaskResponse getTaskById(@PathVariable Long id) {
