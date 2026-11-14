@@ -4,6 +4,20 @@ spring:
   profiles:
     active: dev
 
+management:
+  endpoint:
+    web:
+      base-path: /actuator
+
+  info:
+    env:
+      enabled: true
+
+info:
+  app:
+    description: "Task management application"
+    version: ${app.version}
+
 app:
   name: "Task Manager System"
   version: "0.0.1"
