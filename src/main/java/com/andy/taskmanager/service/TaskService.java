@@ -69,7 +69,7 @@ public class TaskService {
         .orElseThrow(() -> new TaskNotFoundException(id));
 
     // Update
-    taskMapper.updateEntityFromRequest(existingTask, request);
+    taskMapper.updateEntityFromRequest(request, existingTask);
 
     if (request.categoryId() != null) {
       Category category = categoryRepository.findById(request.categoryId())
