@@ -1,23 +1,21 @@
 package com.andy.taskmanager.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
+import org.hibernate.annotations.SoftDelete;
 
 import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "tasks")
-// TODO: @SoftDelete (after remove lombok can use)
-// getter, setter, @Override toString(), @Override hashCode(), @Override equals()
-@Data
+@Getter
+@Setter
 // 给框架用：Hibernate 查库需要先建空壳，再塞数据
 @NoArgsConstructor
 // 给自己用：快速 new 出一个包含所有字段的完整对象
 @AllArgsConstructor
 @Builder
+@SoftDelete
 public class Task {
 
   @Id
