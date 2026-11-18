@@ -1,33 +1,32 @@
 package com.andy.taskmanager.exception;
 
 import jakarta.servlet.http.HttpServletRequest;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
 import java.net.URI;
 import java.time.LocalDateTime;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
+@Slf4j
 @ControllerAdvice
 public class GlobalExceptionHandler {
 
-  // TODO: Refactor to RFC 9457 (ProblemDetail)
   @ExceptionHandler(TaskNotFoundException.class)
-  public ResponseEntity<Map<String, Object>> handleTaskNotFoundException(TaskNotFoundException exception, HttpServletRequest request) {
-    Map<String, Object> body = new HashMap<>();
+  public ProblemDetail handleTaskNotFoundException(TaskNotFoundException exception, HttpServletRequest request) {
+    ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.NOT_FOUND, exception.getMessage());
 
-    body.put("timestamp", LocalDateTime.now());
-    body.put("message", exception.getMessage());
-    body.put("path", request.getRequestURI());
+    problemDetail.setTitle("Task Not Found");
+    problemDetail.setInstance(URI.create(request.getRequestURI()));
+    problemDetail.setProperty("timestamp", LocalDateTime.now());
 
-    return new ResponseEntity<>(body, HttpStatus.NOT_FOUND);
+    return problemDetail;
   }
 
   @ExceptionHandler(CategoryNotFoundException.class)
@@ -42,10 +41,11 @@ public class GlobalExceptionHandler {
   }
 
   @ExceptionHandler(MethodArgumentNotValidException.class)
-  public ProblemDetail handleValidationException(MethodArgumentNotValidException exception) {
+  public ProblemDetail handleValidationException(MethodArgumentNotValidException exception, HttpServletRequest request) {
     ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, "Validation Failed");
 
     problemDetail.setTitle("Bad Request");
+    problemDetail.setInstance(URI.create(request.getRequestURI()));
     problemDetail.setProperty("timestamp", LocalDateTime.now());
 
     List<Map<String, String>> errors = exception.getBindingResult()
@@ -61,15 +61,16 @@ public class GlobalExceptionHandler {
     return problemDetail;
   }
 
-  // TODO: Refactor to RFC 9457 (ProblemDetail)
   @ExceptionHandler(Exception.class)
-  public ResponseEntity<Map<String, Object>> handleGlobalException(HttpServletRequest request) {
-    Map<String, Object> body = new HashMap<>();
+  public ProblemDetail handleGlobalException(Exception exception, HttpServletRequest request) {
+    ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.INTERNAL_SERVER_ERROR, "An unexpected error occurred");
 
-    body.put("timestamp", LocalDateTime.now());
-    body.put("message", "An unexpected error occurred");
-    body.put("path", request.getRequestURI());
+    log.error("Unexpected error at path: {}", request.getRequestURI(), exception);
 
-    return new ResponseEntity<>(body, HttpStatus.INTERNAL_SERVER_ERROR);
+    problemDetail.setTitle("Internal Server Error");
+    problemDetail.setInstance(URI.create(request.getRequestURI()));
+    problemDetail.setProperty("timestamp", LocalDateTime.now());
+
+    return problemDetail;
   }
 }
