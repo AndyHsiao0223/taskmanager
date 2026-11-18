@@ -19,3 +19,11 @@ management:
 
 app:
   max-tasks-per-page: 50
+
+logging:
+  file:
+    name: logs/taskmanager-prod.log
+
+  level:
+    root: WARN
+    com.andy.taskmanager: INFO
