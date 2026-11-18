@@ -19,3 +19,8 @@ management:
 
 app:
   max-tasks-per-page: 15
+
+logging:
+  level:
+    root: INFO
+    com.andy.taskmanager: DEBUG
