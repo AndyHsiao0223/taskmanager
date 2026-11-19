@@ -3,6 +3,12 @@ spring:
     name: taskmanager
   profiles:
     active: dev
+  jpa:
+    hibernate:
+      ddl-auto: validate
+  flyway:
+    baseline-on-migrate: false
+    baseline-version: 20261119084647
 
 management:
   endpoint:

@@ -4,8 +4,6 @@ spring:
     username: "${POSTGRES_USER:admin}"
     password: "${POSTGRES_PASSWORD:passw0rd}"
   jpa:
-    hibernate:
-      ddl-auto: update
     show-sql: true
 
 management:
