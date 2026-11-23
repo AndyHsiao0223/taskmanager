@@ -29,6 +29,7 @@ public class Task {
   private String description;
 
   @Column(nullable = false)
+  @Builder.Default
   private Boolean completed = false;
 
   @Column(name = "created_at", nullable = false, updatable = false)
@@ -40,7 +41,6 @@ public class Task {
 
   @PrePersist
   protected void onCreate() {
-    this.completed = false;
     this.createdAt = LocalDateTime.now();
   }
 }

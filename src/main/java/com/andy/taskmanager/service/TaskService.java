@@ -1,5 +1,6 @@
 package com.andy.taskmanager.service;
 
+import com.andy.taskmanager.dto.TaskPatchRequest;
 import com.andy.taskmanager.dto.TaskRequest;
 import com.andy.taskmanager.dto.TaskResponse;
 import com.andy.taskmanager.entity.Category;
@@ -51,34 +52,33 @@ public class TaskService {
   public TaskResponse createTask(TaskRequest request) {
     Task entityTask = taskMapper.toEntity(request);
 
-    if (request.categoryId() != null) {
-      Category category = categoryRepository.findById(request.categoryId())
-          .orElseThrow(() -> new CategoryNotFoundException(request.categoryId()));
-
-      entityTask.setCategory(category);
+    String description = request.description();
+    if (description != null) {
+      entityTask.setDescription(description.isBlank() ? null : description);
     }
+
+    entityTask.setCategory(findCategory(request.categoryId()));
 
     Task savedTask = taskRepository.save(entityTask);
     return taskMapper.toResponse(savedTask);
   }
 
   @Transactional
-  public TaskResponse updateTask(Long id, TaskRequest request) {
-    // Find, Judge
+  public TaskResponse patchTask(Long id, TaskPatchRequest request) {
     Task existingTask = taskRepository.findById(id)
         .orElseThrow(() -> new TaskNotFoundException(id));
 
-    // Update
-    taskMapper.updateEntityFromRequest(request, existingTask);
+    taskMapper.patchEntity(request, existingTask);
 
-    if (request.categoryId() != null) {
-      Category category = categoryRepository.findById(request.categoryId())
-          .orElseThrow(() -> new CategoryNotFoundException(request.categoryId()));
-
-      existingTask.setCategory(category);
+    String description = request.description();
+    if (description != null) {
+      existingTask.setDescription(description.isBlank() ? null : description);
     }
 
-    // Save, Return
+    if (request.categoryId() != null) {
+      existingTask.setCategory(findCategory(request.categoryId()));
+    }
+
     Task savedTask = taskRepository.save(existingTask);
     return taskMapper.toResponse(savedTask);
   }
@@ -89,5 +89,10 @@ public class TaskService {
         .orElseThrow(() -> new TaskNotFoundException(id));
 
     taskRepository.delete(task);
+  }
+
+  private Category findCategory(Long categoryId) {
+    return categoryRepository.findById(categoryId)
+        .orElseThrow(() -> new CategoryNotFoundException(categoryId));
   }
 }
