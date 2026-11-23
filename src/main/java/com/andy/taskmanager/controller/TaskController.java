@@ -1,5 +1,6 @@
 package com.andy.taskmanager.controller;
 
+import com.andy.taskmanager.dto.TaskPatchRequest;
 import com.andy.taskmanager.dto.TaskRequest;
 import com.andy.taskmanager.dto.TaskResponse;
 import com.andy.taskmanager.service.TaskService;
@@ -49,9 +50,9 @@ public class TaskController {
     return ResponseEntity.status(HttpStatus.CREATED).body(savedTask);
   }
 
-  @PutMapping("/{id}")
-  public TaskResponse updateTask(@PathVariable Long id, @Valid @RequestBody TaskRequest updatedTask) {
-    return taskService.updateTask(id, updatedTask);
+  @PatchMapping("/{id}")
+  public TaskResponse patchTask(@PathVariable Long id, @Valid @RequestBody TaskPatchRequest request) {
+    return taskService.patchTask(id, request);
   }
 
   @DeleteMapping("/{id}")
