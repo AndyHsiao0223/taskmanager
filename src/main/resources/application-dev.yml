@@ -22,3 +22,9 @@ logging:
   level:
     root: INFO
     com.andy.taskmanager: DEBUG
+
+springdoc:
+  api-docs:
+    enabled: true
+  swagger-ui:
+    enabled: true
