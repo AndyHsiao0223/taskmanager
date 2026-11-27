@@ -185,13 +185,13 @@ Swagger/OpenAPI is enabled only in `dev`; `prod` disables it.
 
 ### Task list parameters
 
-| Parameter | Type | Default | Notes |
-|---|---|---|---|
-| `title` | string | none (no filter) | Case-insensitive substring match |
-| `completed` | boolean | none (no filter) | Exact match |
-| `page` | integer | `0` | Zero-based page index |
-| `size` | integer | `10` | Page size |
-| `sort` | string | `createdAt,desc` | `field,direction`, e.g. `sort=title,asc` |
+| Parameter   | Type    | Default          | Notes                                    |
+|-------------|---------|------------------|------------------------------------------|
+| `title`     | string  | none (no filter) | Case-insensitive fuzzy search            |
+| `completed` | boolean | none (no filter) | Exact match                              |
+| `page`      | integer | `0`              | Zero-based page index                    |
+| `size`      | integer | `10`             | Page size                                |
+| `sort`      | string  | `createdAt,desc` | `field,direction`, e.g. `sort=title,asc` |
 
 The response is Spring Data's `Page` JSON with `content`, `totalElements`, `totalPages`, `number`, `size`, `sort`, `first`, `last`, `numberOfElements`, and `empty`.
 
@@ -227,7 +227,8 @@ curl -s -X PATCH http://localhost:8080/api/v1/tasks/1 -H 'Content-Type: applicat
 - `title`, if supplied, must be 2–100 characters and not blank (Unicode whitespace is rejected).
 - `categoryId`, if supplied, must reference an existing category; otherwise 404. A category cannot be unassigned.
 - An empty PATCH object (`{}`) returns 200 with the task unchanged.
-- `DELETE` is a soft delete (`tasks.deleted = true`). Later GET, list, PATCH, and DELETE requests return 404.
+- `DELETE` is a soft delete (`tasks.deleted = true`). Later GET, PATCH, and DELETE by id return 404; list responses
+  exclude the task.
 - Category names are unique (case-sensitive); a duplicate create returns 409.
 - Unknown tasks or categories return 404.
 

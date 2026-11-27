@@ -185,13 +185,13 @@ Swagger/OpenAPI 只在 `dev` 開啟，`prod` 關閉。
 
 ### 任務列表參數
 
-| 參數 | 型別 | 預設 | 說明 |
-|---|---|---|---|
-| `title` | string | 無（不篩選） | 不分大小寫的子字串比對 |
-| `completed` | boolean | 無（不篩選） | 精確比對 |
-| `page` | integer | `0` | 從 0 開始的頁碼 |
-| `size` | integer | `10` | 每頁筆數 |
-| `sort` | string | `createdAt,desc` | `field,direction`，例如 `sort=title,asc` |
+| 參數        | 型別    | 預設             | 說明                                     |
+|-------------|---------|------------------|------------------------------------------|
+| `title`     | string  | 無（不篩選）     | 不分大小寫的模糊搜尋                     |
+| `completed` | boolean | 無（不篩選）     | 精確比對                                 |
+| `page`      | integer | `0`              | 從 0 開始的頁碼                          |
+| `size`      | integer | `10`             | 每頁筆數                                 |
+| `sort`      | string  | `createdAt,desc` | `field,direction`，例如 `sort=title,asc` |
 
 回應是 Spring Data 的 `Page` JSON，包含 `content`、`totalElements`、`totalPages`、`number`、`size`、`sort`、`first`、`last`、`numberOfElements`、`empty`。
 
@@ -227,7 +227,7 @@ curl -s -X PATCH http://localhost:8080/api/v1/tasks/1 -H 'Content-Type: applicat
 - `title` 若有帶，長度需 2–100 且不可為空白（含 Unicode 空白）。
 - `categoryId` 若有帶，必須指向存在的分類，否則 404。分類無法被清空。
 - 空的 PATCH object（`{}`）回 200，任務不變。
-- `DELETE` 是軟刪除（`tasks.deleted = true`）。之後的 GET、列表、PATCH、DELETE 都會回 404。
+- `DELETE` 是軟刪除（`tasks.deleted = true`）。之後的 GET、PATCH、DELETE 都會回 404，列表回應會排除該任務。
 - 分類名稱唯一（區分大小寫）；重複建立回 409。
 - 任務或分類不存在回 404。
 
